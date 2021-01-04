@@ -1,15 +1,55 @@
-package com.space.service;
+package com.space.service.impl;
 
 import com.space.model.Ship;
 import com.space.model.ShipType;
+import com.space.repository.ShipRepository;
+import com.space.service.ShipService;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.awt.print.Pageable;
+import java.util.List;
 
-public class ShipSpecs {
+@Service
+public class ShipServiceImpl implements ShipService {
+
+    private ShipRepository shipRepository;
+
+    @Override
+    public List<Ship> getAll(Specification<Ship> shipSpecification, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Integer countShips(Specification<Ship> shipSpecification) {
+        return null;
+    }
+
+    @Override
+    public Ship createShip(Ship ship) {
+        return null;
+    }
+
+    @Override
+    public Ship updateShip(Long id, Ship ship) {
+        return null;
+    }
+
+    @Override
+    public Ship getShip(Long id) {
+        return null;
+    }
+
+    @Override
+    public void deleteShip(Long id) {
+
+    }
+
+
     public static Specification<Ship> getShipsByNameSpec(String name) {
         return name == null ? null : new Specification<Ship>() {
             @Override
@@ -80,6 +120,5 @@ public class ShipSpecs {
             }
         };
     }
-
 
 }

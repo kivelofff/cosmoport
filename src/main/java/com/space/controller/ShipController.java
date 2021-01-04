@@ -3,9 +3,8 @@ package com.space.controller;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
-import com.space.service.ShipSpecs;
+import com.space.service.impl.ShipServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,7 +36,7 @@ public class ShipController {
                                   @RequestParam(required = false, defaultValue = "0") Integer pageNumber,
                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize, Sort.Direction.ASC, order.getFieldName());
-        return shipRepository.findAll(Specification.where(ShipSpecs.getShipsByNameSpec(name)), page).getContent();
+        return shipRepository.findAll(Specification.where(ShipServiceImpl.getShipsByNameSpec(name)), page).getContent();
     }
 
     @GetMapping("/ships/count")
