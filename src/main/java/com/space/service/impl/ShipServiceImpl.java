@@ -4,6 +4,7 @@ import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import com.space.service.ShipService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +12,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShipServiceImpl implements ShipService {
@@ -21,22 +22,38 @@ public class ShipServiceImpl implements ShipService {
 
     @Override
     public List<Ship> getAll(Specification<Ship> shipSpecification, Pageable pageable) {
-        return null;
+
+        return shipRepository.findAll(shipSpecification, pageable).getContent();
     }
 
     @Override
     public Integer countShips(Specification<Ship> shipSpecification) {
-        return null;
+
+        return shipRepository.findAll(shipSpecification).size();
     }
 
     @Override
     public Ship createShip(Ship ship) {
-        return null;
+
+        Ship savedShip = shipRepository.saveAndFlush(ship);
+        return savedShip;
     }
 
     @Override
     public Ship updateShip(Long id, Ship ship) {
-        return null;
+
+        Optional<Ship> foundShip = shipRepository.findById(id);
+        if (foundShip.isPresent()) {
+            Ship toBeUpdated = foundShip.get();
+            toBeUpdated.setName(ship.getName());
+            shipRepository.saveAndFlush(ship);
+
+            return toBeUpdated;
+        } else {
+            ship.setId(id);
+            shipRepository.saveAndFlush(ship);
+            return ship;
+        }
     }
 
     @Override
