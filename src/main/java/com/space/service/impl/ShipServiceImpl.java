@@ -4,6 +4,7 @@ import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import com.space.service.ShipService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Service
 public class ShipServiceImpl implements ShipService {
-
+    @Autowired
     private ShipRepository shipRepository;
 
     @Override

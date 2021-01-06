@@ -1,9 +1,15 @@
 package com.space.service;
 
 import com.space.model.Ship;
+import com.space.model.ShipType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Date;
 import java.util.List;
 
 public interface ShipService {
@@ -13,4 +19,124 @@ public interface ShipService {
     Ship updateShip(Long id, Ship ship);
     Ship getShip(Long id);
     void deleteShip(Long id);
+
+    static Specification<Ship> getShipsByNameSpec(String name) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (name != null) {
+                    return criteriaBuilder.like(root.get("name"), "%" + name + "%");
+                } else return criteriaBuilder.conjunction();
+
+            }
+        };
+    }
+
+    static Specification<Ship> getShipsByPlanetSpec(String planet) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (planet != null) {
+                    return criteriaBuilder.like(root.get("planet"), "%" + planet + "%");
+                } else return criteriaBuilder.conjunction();
+            }
+        };
+    }
+
+    static Specification<Ship> getShipsByTypeSpec(ShipType shipType) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (shipType  != null) {
+                    return criteriaBuilder.equal(root.get("shipType"), shipType);
+                } else return criteriaBuilder.conjunction();
+            }
+        };
+    }
+
+    static Specification<Ship> getShipsByIsUsedSpec(Boolean isUsed) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (isUsed == null) {
+                    return criteriaBuilder.conjunction();
+                } else if (isUsed) {
+                    return criteriaBuilder.isTrue(root.get("isUsed"));
+                }
+                return criteriaBuilder.isFalse(root.get("isUsed"));
+            }
+        };
+    }
+
+    static Specification<Ship> getShipsByProdDateSpec(Long before, Long after) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (before != null && after != null) {
+                    return criteriaBuilder.between(root.get("prodDate"), new Date(before), new Date(after));
+                } else if (before != null && after == null) {
+                    return criteriaBuilder.greaterThan(root.get("prodDate"), new Date(before));
+                } else if (before == null && after != null) {
+                    return criteriaBuilder.lessThan(root.get("prodDate"), new Date(after));
+
+                } else {
+                    return criteriaBuilder.conjunction();
+                }
+            }
+        };
+    }
+    static Specification<Ship> getShipsBySpeedSpec(Double minSpeed, Double maxSpeed) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (minSpeed != null && maxSpeed != null) {
+                    return criteriaBuilder.between(root.get("speed"), minSpeed, maxSpeed);
+                } else if (minSpeed != null && maxSpeed == null) {
+                    return criteriaBuilder.greaterThan(root.get("speed"), minSpeed);
+                } else if (minSpeed == null && maxSpeed != null) {
+                    return criteriaBuilder.lessThan(root.get("speed"), maxSpeed);
+
+                } else {
+                    return criteriaBuilder.conjunction();
+                }
+            }
+        };
+    }
+
+    static Specification<Ship> getShipsByCrewSizeSpec(Integer minCrewSize, Integer maxCrewSize) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (minCrewSize != null && maxCrewSize != null) {
+                    return criteriaBuilder.between(root.get("crewSize"), minCrewSize, maxCrewSize);
+                } else if (minCrewSize != null && maxCrewSize == null) {
+                    return criteriaBuilder.greaterThan(root.get("crewSize"), minCrewSize);
+                } else if (minCrewSize == null && maxCrewSize != null) {
+                    return criteriaBuilder.lessThan(root.get("crewSize"), maxCrewSize);
+
+                } else {
+                    return criteriaBuilder.conjunction();
+                }
+            }
+        };
+    }
+
+    static Specification<Ship> getShipsByRatingSpec(Double minRating, Double maxRating) {
+        return new Specification<Ship>() {
+            @Override
+            public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (minRating != null && maxRating != null) {
+                    return criteriaBuilder.between(root.get("rating"), minRating, maxRating);
+                } else if (minRating != null && maxRating == null) {
+                    return criteriaBuilder.greaterThan(root.get("rating"), minRating);
+                } else if (minRating == null && maxRating != null) {
+                    return criteriaBuilder.lessThan(root.get("rating"), maxRating);
+
+                } else {
+                    return criteriaBuilder.conjunction();
+                }
+            }
+        };
+    }
+
 }

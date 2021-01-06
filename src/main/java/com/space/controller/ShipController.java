@@ -3,6 +3,7 @@ package com.space.controller;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
+import com.space.service.ShipService;
 import com.space.service.impl.ShipServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,26 +18,33 @@ import java.util.List;
 public class ShipController {
 
     @Autowired
-    private ShipRepository shipRepository;
+    private ShipService service;
 
-    @GetMapping("/ships")
+    @RequestMapping(value = "/ships", method = RequestMethod.GET)
     public List<Ship> getShipList(@RequestParam(required = false) String name,
                                   @RequestParam(required = false) String planet,
                                   @RequestParam(required = false) ShipType shipType,
                                   @RequestParam(required = false) Long after,
                                   @RequestParam(required = false) Long before,
-                                  @RequestParam(required = false, defaultValue = "false") Boolean isUsed,
+                                  @RequestParam(required = false) Boolean isUsed,
                                   @RequestParam(required = false) Double minSpeed,
                                   @RequestParam(required = false) Double maxSpeed,
                                   @RequestParam(required = false) Integer minCrewSize,
                                   @RequestParam(required = false) Integer maxCewSize,
                                   @RequestParam(required = false) Double minRating,
                                   @RequestParam(required = false) Double maxRating,
-                                  @RequestParam(required = false) ShipOrder order,
+                                  @RequestParam(required = false, defaultValue = "ID") ShipOrder order,
                                   @RequestParam(required = false, defaultValue = "0") Integer pageNumber,
                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize, Sort.Direction.ASC, order.getFieldName());
-        return shipRepository.findAll(Specification.where(ShipServiceImpl.getShipsByNameSpec(name)), page).getContent();
+        return service.getAll(Specification.where(ShipService.getShipsByNameSpec(name).
+                and(Specification.where(ShipService.getShipsByPlanetSpec(planet)))).
+                and(Specification.where(ShipService.getShipsByTypeSpec(shipType))).
+                and(Specification.where(ShipService.getShipsByProdDateSpec(before, after))).
+                and(Specification.where(ShipService.getShipsByIsUsedSpec(isUsed))).
+                and(Specification.where(ShipService.getShipsBySpeedSpec(minSpeed, maxSpeed))).
+                and(Specification.where(ShipService.getShipsByCrewSizeSpec(minCrewSize, maxCewSize))).
+                and(Specification.where(ShipService.getShipsByRatingSpec(minRating, maxRating))), page);
     }
 
     @GetMapping("/ships/count")
@@ -52,7 +60,14 @@ public class ShipController {
                                  @RequestParam(required = false) Integer maxCewSize,
                                  @RequestParam(required = false) Double minRating,
                                  @RequestParam(required = false) Double maxRating) {
-        return new Integer(0);
+        return service.countShips(Specification.where(ShipService.getShipsByNameSpec(name).
+                and(Specification.where(ShipService.getShipsByPlanetSpec(planet)))).
+                and(Specification.where(ShipService.getShipsByTypeSpec(shipType))).
+                and(Specification.where(ShipService.getShipsByProdDateSpec(before, after))).
+                and(Specification.where(ShipService.getShipsByIsUsedSpec(isUsed))).
+                and(Specification.where(ShipService.getShipsBySpeedSpec(minSpeed, maxSpeed))).
+                and(Specification.where(ShipService.getShipsByCrewSizeSpec(minCrewSize, maxCewSize))).
+                and(Specification.where(ShipService.getShipsByRatingSpec(minRating, maxRating))));
     }
 
     @PostMapping("/ships")

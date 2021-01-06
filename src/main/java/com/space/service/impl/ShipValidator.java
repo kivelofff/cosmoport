@@ -15,14 +15,9 @@ public class ShipValidator {
         String planet = ship.getPlanet();
         boolean isPlanetValid = (planet != null && planet.length()>0 && planet.length()<=50);
         Calendar shipProdDate = Calendar.getInstance();
-        Calendar minDate = Calendar.getInstance();
-        Calendar maxDate = Calendar.getInstance();
         shipProdDate.setTime(ship.getProdDate());
-        minDate.set(280, 01, 01);
-        maxDate.s
+        boolean isProdDateValid = (shipProdDate.get(Calendar.YEAR) >= 2800 && shipProdDate.get(Calendar.YEAR) <= 3800);
 
-        Date minDate =
-        boolean isProdDateValid = (prodDate > new Calendar())
-        return isValid;
+        return isNameValid && isPlanetValid && isProdDateValid;
     }
 }
