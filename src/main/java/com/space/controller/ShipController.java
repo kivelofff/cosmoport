@@ -72,7 +72,8 @@ public class ShipController {
 
     @PostMapping("/ships")
     public Ship createShip(@RequestBody Ship ship) {
-        return null;
+        service.createShip(ship);
+        return ship;
     }
 
     @GetMapping("/ships/{id}")

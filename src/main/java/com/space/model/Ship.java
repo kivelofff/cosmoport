@@ -1,6 +1,10 @@
 package com.space.model;
 
+import com.sun.istack.internal.NotNull;
+
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.util.Date;
 @Entity
@@ -9,6 +13,8 @@ public class Ship {
     private Long id;
     private String name;
     private String planet;
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private ShipType shipType;
     private Date prodDate;
     private Boolean isUsed;
