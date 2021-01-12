@@ -2,14 +2,15 @@ package com.space.controller;
 
 import com.space.model.Ship;
 import com.space.model.ShipType;
-import com.space.repository.ShipRepository;
 import com.space.service.ShipService;
-import com.space.service.impl.ShipServiceImpl;
+import com.space.service.ShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,14 @@ public class ShipController {
 
     @Autowired
     private ShipService service;
+
+    @Autowired
+    private ShipValidator shipValidator;
+
+    @InitBinder
+    protected void initBinder(final WebDataBinder binder) {
+        binder.addValidators(shipValidator);
+    }
 
     @RequestMapping(value = "/ships", method = RequestMethod.GET)
     public List<Ship> getShipList(@RequestParam(required = false) String name,
@@ -71,7 +80,7 @@ public class ShipController {
     }
 
     @PostMapping("/ships")
-    public Ship createShip(@RequestBody Ship ship) {
+    public Ship createShip(@Validated @RequestBody Ship ship) {
         service.createShip(ship);
         return ship;
     }
@@ -82,7 +91,7 @@ public class ShipController {
     }
 
     @PostMapping("/ships/{id}")
-    public Ship updateShip(@PathVariable Long id, @RequestBody Ship ship) {
+    public Ship updateShip(@PathVariable Long id, @Validated @RequestBody Ship ship) {
         return null;
     }
 
