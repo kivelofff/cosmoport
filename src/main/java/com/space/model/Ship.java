@@ -5,20 +5,28 @@ import com.sun.istack.internal.NotNull;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.va
 import java.util.Date;
 @Entity
 public class Ship {
     @Id
     private Long id;
+    @NotNull
+    @Size
     private String name;
+    @NotNull
     private String planet;
     @NotNull
     @Enumerated(EnumType.STRING)
     private ShipType shipType;
+    @NotNull
     private Date prodDate;
+
     private Boolean isUsed;
+    @NotNull
     private Double speed;
+    @NotNull
     private Integer crewSize;
     private Double rating;
 
