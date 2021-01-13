@@ -9,9 +9,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 @RestController
@@ -80,24 +85,56 @@ public class ShipController {
     }
 
     @PostMapping("/ships")
-    public Ship createShip(@Validated @RequestBody Ship ship) {
+    public Ship createShip(@Validated @RequestBody Ship ship, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            System.out.println(errors.size());
+            for (int i = 0; i < errors.size(); i++) {
+                System.out.println(errors.get(i).toString());
+            }
+            System.out.println("Ship is a shit");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity isn't valid");
+        }
         service.createShip(ship);
         return ship;
     }
 
     @GetMapping("/ships/{id}")
-    public Ship getShip(@PathVariable Long id) {
-        return null;
+    public @ResponseBody Ship getShip(@PathVariable Long id) {
+        if (!service.isIdValid(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id " + id + " has wrong format.");
+        }
+        if (!service.isIdExists(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " doesn't exists");
+        }
+        Ship ship = service.getShip(id);
+        return ship;
     }
 
     @PostMapping("/ships/{id}")
-    public Ship updateShip(@PathVariable Long id, @Validated @RequestBody Ship ship) {
-        return null;
+    public @ResponseBody Ship updateShip(@PathVariable Long id, @Validated @RequestBody Ship ship, BindingResult bindingResult) {
+        if (!service.isIdValid(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id " + id + " has wrong format.");
+        }
+        if (!service.isIdExists(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " doesn't exists");
+        }
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity isn't valid");
+        }
+        Ship updatedShip = service.updateShip(id, ship);
+        return updatedShip;
     }
 
     @DeleteMapping("/ships/{id}")
     public void deleteShip(@PathVariable Long id) {
-
+        if (!service.isIdValid(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id " + id + " has wrong format.");
+        }
+        if (!service.isIdExists(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " doesn't exists");
+        }
+        service.deleteShip(id);
     }
 
 }

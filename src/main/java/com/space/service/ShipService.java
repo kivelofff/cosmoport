@@ -19,6 +19,8 @@ public interface ShipService {
     Ship updateShip(Long id, Ship ship);
     Ship getShip(Long id);
     void deleteShip(Long id);
+    boolean isIdValid (Long id);
+    boolean isIdExists (Long id);
 
     static Specification<Ship> getShipsByNameSpec(String name) {
         return new Specification<Ship>() {
@@ -74,9 +76,9 @@ public interface ShipService {
             public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 if (before != null && after != null) {
                     return criteriaBuilder.between(root.get("prodDate"), new Date(before), new Date(after));
-                } else if (before != null && after == null) {
+                } else if (before != null ) {
                     return criteriaBuilder.greaterThan(root.get("prodDate"), new Date(before));
-                } else if (before == null && after != null) {
+                } else if (after != null) {
                     return criteriaBuilder.lessThan(root.get("prodDate"), new Date(after));
 
                 } else {
@@ -91,9 +93,9 @@ public interface ShipService {
             public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 if (minSpeed != null && maxSpeed != null) {
                     return criteriaBuilder.between(root.get("speed"), minSpeed, maxSpeed);
-                } else if (minSpeed != null && maxSpeed == null) {
+                } else if (minSpeed != null) {
                     return criteriaBuilder.greaterThan(root.get("speed"), minSpeed);
-                } else if (minSpeed == null && maxSpeed != null) {
+                } else if (maxSpeed != null) {
                     return criteriaBuilder.lessThan(root.get("speed"), maxSpeed);
 
                 } else {
@@ -109,9 +111,9 @@ public interface ShipService {
             public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 if (minCrewSize != null && maxCrewSize != null) {
                     return criteriaBuilder.between(root.get("crewSize"), minCrewSize, maxCrewSize);
-                } else if (minCrewSize != null && maxCrewSize == null) {
+                } else if (minCrewSize != null) {
                     return criteriaBuilder.greaterThan(root.get("crewSize"), minCrewSize);
-                } else if (minCrewSize == null && maxCrewSize != null) {
+                } else if (maxCrewSize != null) {
                     return criteriaBuilder.lessThan(root.get("crewSize"), maxCrewSize);
 
                 } else {
@@ -127,9 +129,9 @@ public interface ShipService {
             public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 if (minRating != null && maxRating != null) {
                     return criteriaBuilder.between(root.get("rating"), minRating, maxRating);
-                } else if (minRating != null && maxRating == null) {
+                } else if (minRating != null) {
                     return criteriaBuilder.greaterThan(root.get("rating"), minRating);
-                } else if (minRating == null && maxRating != null) {
+                } else if (maxRating != null) {
                     return criteriaBuilder.lessThan(root.get("rating"), maxRating);
 
                 } else {
