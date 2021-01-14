@@ -10,22 +10,23 @@ import java.util.Date;
 @Entity
 public class Ship {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
+
 
     private String name;
-    @NotNull
+
     private String planet;
-    @NotNull
+
     @Enumerated(EnumType.STRING)
     private ShipType shipType;
-    @NotNull
+
     private Date prodDate;
 
     private Boolean isUsed;
-    @NotNull
+
     private Double speed;
-    @NotNull
+
     private Integer crewSize;
     private Double rating;
 

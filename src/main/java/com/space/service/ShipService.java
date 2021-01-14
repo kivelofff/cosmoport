@@ -21,6 +21,7 @@ public interface ShipService {
     void deleteShip(Long id);
     boolean isIdValid (Long id);
     boolean isIdExists (Long id);
+    String validateShip (Ship ship);
 
     static Specification<Ship> getShipsByNameSpec(String name) {
         return new Specification<Ship>() {

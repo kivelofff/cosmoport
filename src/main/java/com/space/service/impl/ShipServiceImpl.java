@@ -47,7 +47,7 @@ public class ShipServiceImpl implements ShipService {
     @Override
     public Ship createShip(Ship ship) {
         calculateRating(ship);
-        Ship savedShip = shipRepository.save(ship);
+        Ship savedShip = shipRepository.saveAndFlush(ship);
         return savedShip;
     }
 
@@ -55,7 +55,7 @@ public class ShipServiceImpl implements ShipService {
     public Ship updateShip(Long id, Ship ship) {
 
         Optional<Ship> foundShip = shipRepository.findById(id);
-        if (foundShip.isPresent()) {
+
             Ship toBeUpdated = foundShip.get();
             toBeUpdated.setName(ship.getName());
             toBeUpdated.setPlanet(ship.getPlanet());
@@ -68,11 +68,7 @@ public class ShipServiceImpl implements ShipService {
             shipRepository.saveAndFlush(toBeUpdated);
 
             return toBeUpdated;
-        } else {
-            ship.setId(id);
-            shipRepository.save(ship);
-            return ship;
-        }
+
     }
 
     @Override
@@ -95,7 +91,33 @@ public class ShipServiceImpl implements ShipService {
         return shipRepository.existsById(id);
     }
 
-
+    @Override
+    public String validateShip(Ship ship) {
+        String errorMessage = new String();
+        String shipName = ship.getName();
+        if (shipName == null || shipName.length() > 50) {
+            errorMessage.concat("Name is too long or empty. ");
+        }
+        String shipPlanet = ship.getPlanet();
+        if (shipPlanet == null || shipPlanet.length() > 50) {
+            errorMessage.concat("Planet name is too long or empty");
+        }
+        Calendar shipProdDate = new GregorianCalendar();
+        shipProdDate.setTime(ship.getProdDate());
+        Integer yearOfProd = shipProdDate.get(Calendar.YEAR);
+        if (yearOfProd > 3019 || yearOfProd < 2800) {
+            errorMessage.concat("Year of production should be between 2800 and 3019");
+        }
+        Double shipSpeed = ship.getSpeed();
+        if (shipSpeed < 0.01d || shipSpeed > 0.99d) {
+            errorMessage.concat("Speed should be between 0.01 and 0.99");
+        }
+        Integer shipCrewSize = ship.getCrewSize();
+        if (shipCrewSize < 1 || shipCrewSize > 9999) {
+            errorMessage.concat("Crew size should be between 1 and 9999");
+        }
+        return errorMessage;
+    }
 
 
 }

@@ -3,7 +3,7 @@ package com.space.controller;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.service.ShipService;
-import com.space.service.ShipValidator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,14 +25,6 @@ public class ShipController {
 
     @Autowired
     private ShipService service;
-
-    @Autowired
-    private ShipValidator shipValidator;
-
-    @InitBinder
-    protected void initBinder(final WebDataBinder binder) {
-        binder.addValidators(shipValidator);
-    }
 
     @RequestMapping(value = "/ships", method = RequestMethod.GET)
     public List<Ship> getShipList(@RequestParam(required = false) String name,
@@ -85,15 +77,11 @@ public class ShipController {
     }
 
     @PostMapping("/ships")
-    public Ship createShip(@Validated @RequestBody Ship ship, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<ObjectError> errors = bindingResult.getAllErrors();
-            System.out.println(errors.size());
-            for (int i = 0; i < errors.size(); i++) {
-                System.out.println(errors.get(i).toString());
-            }
-            System.out.println("Ship is a shit");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity isn't valid");
+    public Ship createShip(@RequestBody Ship ship) {
+        String errorMessage = service.validateShip(ship);
+        if (!errorMessage.isEmpty()) {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
         service.createShip(ship);
         return ship;
@@ -112,17 +100,19 @@ public class ShipController {
     }
 
     @PostMapping("/ships/{id}")
-    public @ResponseBody Ship updateShip(@PathVariable Long id, @Validated @RequestBody Ship ship, BindingResult bindingResult) {
+    public @ResponseBody Ship updateShip(@PathVariable Long id, @RequestBody Ship ship) {
         if (!service.isIdValid(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id " + id + " has wrong format.");
         }
         if (!service.isIdExists(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " doesn't exists");
         }
-        if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity isn't valid");
+        String errorMessage = service.validateShip(ship);
+        if (!errorMessage.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
         Ship updatedShip = service.updateShip(id, ship);
+
         return updatedShip;
     }
 
