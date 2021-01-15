@@ -78,6 +78,7 @@ public class ShipController {
 
     @PostMapping("/ships")
     public Ship createShip(@RequestBody Ship ship) {
+
         String errorMessage = service.validateShip(ship);
         if (!errorMessage.isEmpty()) {
 
@@ -109,7 +110,7 @@ public class ShipController {
         }
         String errorMessage = service.validateShip(ship);
         if (!errorMessage.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            return service.getShip(id);
         }
         Ship updatedShip = service.updateShip(id, ship);
 
