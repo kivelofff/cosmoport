@@ -46,6 +46,10 @@ public class ShipServiceImpl implements ShipService {
 
     @Override
     public Ship createShip(Ship ship) {
+        Boolean isUsed = ship.getUsed();
+        if (isUsed == null) {
+            ship.setUsed(false);
+        }
         calculateRating(ship);
         Ship savedShip = shipRepository.saveAndFlush(ship);
         return savedShip;
@@ -57,13 +61,34 @@ public class ShipServiceImpl implements ShipService {
         Optional<Ship> foundShip = shipRepository.findById(id);
 
             Ship toBeUpdated = foundShip.get();
-            toBeUpdated.setName(ship.getName());
-            toBeUpdated.setPlanet(ship.getPlanet());
-            toBeUpdated.setShipType(ship.getShipType());
-            toBeUpdated.setProdDate(ship.getProdDate());
-            toBeUpdated.setUsed(ship.getUsed());
-            toBeUpdated.setSpeed(ship.getSpeed());
-            toBeUpdated.setCrewSize(ship.getCrewSize());
+            String name = ship.getName();
+            if (name != null) {
+                toBeUpdated.setName(name);
+            }
+            String planet = ship.getPlanet();
+            if (planet != null) {
+                toBeUpdated.setPlanet(planet);
+            }
+            ShipType shipType = ship.getShipType();
+            if (shipType != null) {
+                toBeUpdated.setShipType(shipType);
+            }
+            Date prodDate = ship.getProdDate();
+            if (prodDate != null) {
+                toBeUpdated.setProdDate(prodDate);
+            }
+            Boolean isUsed = ship.getUsed();
+            if (isUsed != null) {
+                toBeUpdated.setUsed(isUsed);
+            }
+            Double speed = ship.getSpeed();
+            if (speed != null) {
+                toBeUpdated.setSpeed(speed);
+            }
+            Integer crewSize = ship.getCrewSize();
+            if (crewSize != null) {
+                toBeUpdated.setCrewSize(crewSize);
+            }
             calculateRating(toBeUpdated);
             shipRepository.saveAndFlush(toBeUpdated);
 
@@ -92,45 +117,88 @@ public class ShipServiceImpl implements ShipService {
     }
 
     @Override
-    public String validateShip(Ship ship) {
+    public String validateCreateShip(Ship ship) {
 
         String errorMessage = new String();
-        String shipName = ship.getName();
-        if (shipName == null || shipName.isEmpty() || shipName.length() > 50) {
-            errorMessage = errorMessage.concat("Name is too long or empty. ");
-        }
-        String shipPlanet = ship.getPlanet();
+        errorMessage = errorMessage.concat(validateName(ship.getName()));
+        errorMessage = errorMessage.concat(validatePlanet(ship.getPlanet()));
+        errorMessage = errorMessage.concat(validateProdDate(ship.getProdDate()));
+        errorMessage = errorMessage.concat(validateSpeed(ship.getSpeed()));
+        errorMessage = errorMessage.concat(validateCrewSize(ship.getCrewSize()));
 
-        if (shipPlanet == null || shipPlanet.length() > 50) {
-            errorMessage = errorMessage.concat("Planet name is too long or empty. ");
-        }
-        Calendar shipProdDate = new GregorianCalendar();
-        Date date = ship.getProdDate();
-        if (date == null) {
-            errorMessage = errorMessage.concat("Year of production is null. ");
-        } else {
-            shipProdDate.setTime(date);
-            Integer yearOfProd = shipProdDate.get(Calendar.YEAR);
-            if (yearOfProd > 3019 || yearOfProd < 2800) {
-                errorMessage = errorMessage.concat("Year of production should be between 2800 and 3019. ");
-            }
-        }
-        Boolean shipIsUsed = ship.getUsed();
-        if (shipIsUsed == null) {
+        if (validateIsUsed(ship.getUsed()) != "") {
             ship.setUsed(false);
         }
-        Double shipSpeed = ship.getSpeed();
-        if (shipSpeed == null || shipSpeed < 0.01d || shipSpeed > 0.99d) {
-            errorMessage = errorMessage.concat("Speed should be between 0.01 and 0.99. ");
-        }
 
-        Integer shipCrewSize = ship.getCrewSize();
-        if (shipCrewSize == null || shipCrewSize < 1 || shipCrewSize > 9999) {
-            errorMessage = errorMessage.concat("Crew size should be between 1 and 9999. ");
-        }
         return errorMessage;
     }
 
+    @Override
+    public String checkShipForNullFields(Ship ship) {
+        String errorMessage = new String();
+        if (ship.getName() == null) errorMessage = errorMessage.concat("Name is null");
+        if (ship.getPlanet() == null) errorMessage = errorMessage.concat("Planet is null");
+        if (ship.getShipType() == null) errorMessage = errorMessage.concat("Ship type is null");
+        if (ship.getProdDate() == null) errorMessage = errorMessage.concat("Ship prod date is null");
+        if (ship.getCrewSize() == null) errorMessage = errorMessage.concat("Ship crew size is null");
+        if (ship.getSpeed() == null) errorMessage = errorMessage.concat("Ship speed is null");
+        return errorMessage;
+    }
+
+    @Override
+    public String validateName(String name) {
+        if ( name == null || name.isEmpty() || name.length() > 50) {
+            return "Name is too long or empty. ";
+        }
+        return "";
+    }
+
+    @Override
+    public String validatePlanet(String planet) {
+        if ( planet == null || planet.length() > 50) {
+            return "Planet name is too long or empty. ";
+        }
+        return "";
+    }
+
+    @Override
+    public String validateProdDate(Date prodDate) {
+        if (prodDate == null) {
+            return "Ship prod date is null";
+        }
+        Calendar shipProdDate = new GregorianCalendar();
+
+            shipProdDate.setTime(prodDate);
+            Integer yearOfProd = shipProdDate.get(Calendar.YEAR);
+            if (yearOfProd > 3019 || yearOfProd < 2800) {
+                return "Year of production should be between 2800 and 3019. ";
+            }
+        return "";
+    }
+
+    @Override
+    public String validateIsUsed(Boolean isUsed) {
+        if (isUsed == null) {
+            return "IsUsed flag is empty";
+        }
+        return "";
+    }
+
+    @Override
+    public String validateSpeed(Double speed) {
+        if ( speed == null || speed < 0.01d || speed > 0.99d) {
+            return "Speed should be between 0.01 and 0.99. ";
+        }
+        return "";
+    }
+
+    @Override
+    public String validateCrewSize(Integer crewSize) {
+        if ( crewSize == null || crewSize < 1 || crewSize > 9999) {
+            return "Crew size should be between 1 and 9999. ";
+        }
+        return "";
+    }
 
 
 }
