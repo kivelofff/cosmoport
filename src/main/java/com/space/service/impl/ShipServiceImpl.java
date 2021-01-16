@@ -125,23 +125,37 @@ public class ShipServiceImpl implements ShipService {
         errorMessage = errorMessage.concat(validateProdDate(ship.getProdDate()));
         errorMessage = errorMessage.concat(validateSpeed(ship.getSpeed()));
         errorMessage = errorMessage.concat(validateCrewSize(ship.getCrewSize()));
-
-        if (validateIsUsed(ship.getUsed()) != "") {
-            ship.setUsed(false);
-        }
-
         return errorMessage;
     }
 
     @Override
-    public String checkShipForNullFields(Ship ship) {
+    public String validateUpdateShip(Ship ship) {
         String errorMessage = new String();
-        if (ship.getName() == null) errorMessage = errorMessage.concat("Name is null");
-        if (ship.getPlanet() == null) errorMessage = errorMessage.concat("Planet is null");
-        if (ship.getShipType() == null) errorMessage = errorMessage.concat("Ship type is null");
-        if (ship.getProdDate() == null) errorMessage = errorMessage.concat("Ship prod date is null");
-        if (ship.getCrewSize() == null) errorMessage = errorMessage.concat("Ship crew size is null");
-        if (ship.getSpeed() == null) errorMessage = errorMessage.concat("Ship speed is null");
+        String name = ship.getName();
+        if (ship.getName() != null && (name.isEmpty() || name.length() > 50)) {
+            errorMessage = errorMessage.concat("Name should be not empty and shorter than 50 symbols. ");
+        }
+        String planet = ship.getPlanet();
+        if (planet != null && planet.length() > 50) {
+            errorMessage = errorMessage.concat("Planet should be not empty and shorter than 50 symbols. ");
+        }
+        Date prodDate = ship.getProdDate();
+        if (prodDate != null) {
+            Calendar shipProdDate = new GregorianCalendar();
+            shipProdDate.setTime(prodDate);
+            Integer yearOfProd = shipProdDate.get(Calendar.YEAR);
+            if (yearOfProd > 3019 || yearOfProd < 2800) {
+                errorMessage = errorMessage.concat("Prod year should be less than 3019 and greater than 2800. ");
+            }
+        }
+        Integer crewSize = ship.getCrewSize();
+        if (crewSize != null && (crewSize < 1 || crewSize > 9999))  {
+            errorMessage = errorMessage.concat("Crew size should be between 1 and 9999. ");
+        }
+        Double speed = ship.getSpeed();
+        if (speed != null && (speed < 0.01d || speed > 0.99d)) {
+            errorMessage = errorMessage.concat("Speed should be between 0.01 and 0.99. ");
+        }
         return errorMessage;
     }
 

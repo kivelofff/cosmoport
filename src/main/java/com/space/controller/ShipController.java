@@ -36,7 +36,7 @@ public class ShipController {
                                   @RequestParam(required = false) Double minSpeed,
                                   @RequestParam(required = false) Double maxSpeed,
                                   @RequestParam(required = false) Integer minCrewSize,
-                                  @RequestParam(required = false) Integer maxCewSize,
+                                  @RequestParam(required = false) Integer maxCrewSize,
                                   @RequestParam(required = false) Double minRating,
                                   @RequestParam(required = false) Double maxRating,
                                   @RequestParam(required = false, defaultValue = "ID") ShipOrder order,
@@ -49,7 +49,7 @@ public class ShipController {
                 and(Specification.where(ShipService.getShipsByProdDateSpec(before, after))).
                 and(Specification.where(ShipService.getShipsByIsUsedSpec(isUsed))).
                 and(Specification.where(ShipService.getShipsBySpeedSpec(minSpeed, maxSpeed))).
-                and(Specification.where(ShipService.getShipsByCrewSizeSpec(minCrewSize, maxCewSize))).
+                and(Specification.where(ShipService.getShipsByCrewSizeSpec(minCrewSize, maxCrewSize))).
                 and(Specification.where(ShipService.getShipsByRatingSpec(minRating, maxRating))), page);
     }
 
@@ -63,7 +63,7 @@ public class ShipController {
                                  @RequestParam(required = false) Double minSpeed,
                                  @RequestParam(required = false) Double maxSpeed,
                                  @RequestParam(required = false) Integer minCrewSize,
-                                 @RequestParam(required = false) Integer maxCewSize,
+                                 @RequestParam(required = false) Integer maxCrewSize,
                                  @RequestParam(required = false) Double minRating,
                                  @RequestParam(required = false) Double maxRating) {
         return service.countShips(Specification.where(ShipService.getShipsByNameSpec(name).
@@ -72,19 +72,14 @@ public class ShipController {
                 and(Specification.where(ShipService.getShipsByProdDateSpec(before, after))).
                 and(Specification.where(ShipService.getShipsByIsUsedSpec(isUsed))).
                 and(Specification.where(ShipService.getShipsBySpeedSpec(minSpeed, maxSpeed))).
-                and(Specification.where(ShipService.getShipsByCrewSizeSpec(minCrewSize, maxCewSize))).
+                and(Specification.where(ShipService.getShipsByCrewSizeSpec(minCrewSize, maxCrewSize))).
                 and(Specification.where(ShipService.getShipsByRatingSpec(minRating, maxRating))));
     }
 
     @PostMapping("/ships")
     public Ship createShip(@RequestBody Ship ship) {
 
-        String errorMessage = service.checkShipForNullFields(ship);
-        if (!errorMessage.isEmpty()) {
-
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }
-        errorMessage = service.validateShip(ship);
+        String errorMessage = service.validateCreateShip(ship);
         if (!errorMessage.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
@@ -112,7 +107,7 @@ public class ShipController {
         if (!service.isIdExists(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id " + id + " doesn't exists");
         }
-        String errorMessage = service.validateShip(ship);
+        String errorMessage = service.validateUpdateShip(ship);
         if (!errorMessage.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }

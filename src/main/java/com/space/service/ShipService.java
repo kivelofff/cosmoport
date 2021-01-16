@@ -22,7 +22,7 @@ public interface ShipService {
     boolean isIdValid (Long id);
     boolean isIdExists (Long id);
     String validateCreateShip (Ship ship);
-    String checkShipForNullFields (Ship ship);
+    String validateUpdateShip (Ship ship);
     String validateName(String name);
     String validatePlanet(String planet);
     String validateProdDate(Date prodDate);
@@ -83,11 +83,11 @@ public interface ShipService {
             @Override
             public Predicate toPredicate(Root<Ship> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 if (before != null && after != null) {
-                    return criteriaBuilder.between(root.get("prodDate"), new Date(before), new Date(after));
-                } else if (before != null ) {
-                    return criteriaBuilder.greaterThan(root.get("prodDate"), new Date(before));
-                } else if (after != null) {
-                    return criteriaBuilder.lessThan(root.get("prodDate"), new Date(after));
+                    return criteriaBuilder.between(root.get("prodDate"), new Date(after), new Date(before));
+                } else if (after != null ) {
+                    return criteriaBuilder.greaterThanOrEqualTo(root.get("prodDate"), new Date(after));
+                } else if (before != null) {
+                    return criteriaBuilder.lessThanOrEqualTo(root.get("prodDate"), new Date(before));
 
                 } else {
                     return criteriaBuilder.conjunction();
@@ -102,9 +102,9 @@ public interface ShipService {
                 if (minSpeed != null && maxSpeed != null) {
                     return criteriaBuilder.between(root.get("speed"), minSpeed, maxSpeed);
                 } else if (minSpeed != null) {
-                    return criteriaBuilder.greaterThan(root.get("speed"), minSpeed);
+                    return criteriaBuilder.greaterThanOrEqualTo(root.get("speed"), minSpeed);
                 } else if (maxSpeed != null) {
-                    return criteriaBuilder.lessThan(root.get("speed"), maxSpeed);
+                    return criteriaBuilder.lessThanOrEqualTo(root.get("speed"), maxSpeed);
 
                 } else {
                     return criteriaBuilder.conjunction();
@@ -120,9 +120,9 @@ public interface ShipService {
                 if (minCrewSize != null && maxCrewSize != null) {
                     return criteriaBuilder.between(root.get("crewSize"), minCrewSize, maxCrewSize);
                 } else if (minCrewSize != null) {
-                    return criteriaBuilder.greaterThan(root.get("crewSize"), minCrewSize);
+                    return criteriaBuilder.greaterThanOrEqualTo(root.get("crewSize"), minCrewSize);
                 } else if (maxCrewSize != null) {
-                    return criteriaBuilder.lessThan(root.get("crewSize"), maxCrewSize);
+                    return criteriaBuilder.lessThanOrEqualTo(root.get("crewSize"), maxCrewSize);
 
                 } else {
                     return criteriaBuilder.conjunction();
@@ -138,9 +138,9 @@ public interface ShipService {
                 if (minRating != null && maxRating != null) {
                     return criteriaBuilder.between(root.get("rating"), minRating, maxRating);
                 } else if (minRating != null) {
-                    return criteriaBuilder.greaterThan(root.get("rating"), minRating);
+                    return criteriaBuilder.greaterThanOrEqualTo(root.get("rating"), minRating);
                 } else if (maxRating != null) {
-                    return criteriaBuilder.lessThan(root.get("rating"), maxRating);
+                    return criteriaBuilder.lessThanOrEqualTo(root.get("rating"), maxRating);
 
                 } else {
                     return criteriaBuilder.conjunction();
